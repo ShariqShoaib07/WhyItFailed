@@ -76,13 +76,21 @@ accents for technical fields (category, tags) to signal "engineering" not
 | `PostForm.tsx` | Full create-post form |
 | `ImageUpload.tsx` | Drag/drop or tap upload, preview before submit |
 
-## 4. Category Color Map (consistent across badges)
-- Robotics → blue
-- AI/ML → purple
-- Web/App → green
-- Embedded → orange
-- Hardware → red
-- Other → grey
+## 4. Category Badge Coloring (since categories are now free-text, not fixed)
+Categories are user-defined, so we can't hardcode a color per category
+name. Instead, derive a consistent color from a small fixed palette by
+hashing the category string (e.g. simple string hash mod palette length).
+Same category text always maps to the same color, but the app isn't
+limited to a preset list of categories.
+
+Suggested palette (cycle through via hash): blue, purple, green, orange,
+red, teal, pink, yellow — muted/desaturated versions to match the
+dark-mode theme.
+
+Category input in the create-post form should still feel guided, not a
+blank void: show existing popular categories as quick-select chips above
+the free-text field (pulled dynamically from `SELECT DISTINCT category`),
+so users can tap an existing one or type their own new category.
 
 ## 5. Responsive Behavior
 - Mobile-first: single column always, navbar collapses search into icon

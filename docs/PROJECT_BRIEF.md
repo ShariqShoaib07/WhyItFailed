@@ -1,10 +1,12 @@
 # FailLog — Project Brief
 
 ## What This Is
-FailLog is a web platform where students post structured "failure reports" —
+FailLog is a web platform where people post structured "failure reports" —
 what they tried, what broke, and why — instead of generic forum chatter.
+It's domain-agnostic: a robotics student, a chemistry undergrad, a startup
+founder, or a hobbyist can all post in their own self-defined category.
 It's framed visually and behaviorally like a social feed (Instagram-style
-scroll, cards, like/upvote), but the content type is technical postmortems
+scroll, cards, like/upvote), but the content type is structured postmortems
 instead of photos.
 
 This document is the single source of truth for any developer (human or AI
@@ -19,9 +21,10 @@ specific areas — link them as needed.
 - `FEATURE_CHECKLIST.md` — build-order checklist, v1 vs v2 scope
 
 ## Core Concept
-> "Engineering Failure Knowledge Base" — not motivation content, not a forum.
-> Pure structured technical learning, delivered through a feed people
-> actually want to scroll.
+> "Failure Knowledge Base" — not motivation content, not a forum. Pure
+> structured learning from real attempts, delivered through a feed people
+> actually want to scroll. Open to any field, not locked to engineering/CS —
+> categories are user-defined, not preset.
 
 ## Goals
 1. Strong CV/portfolio piece (recognizable modern stack, public repo)

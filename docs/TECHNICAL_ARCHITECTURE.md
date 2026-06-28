@@ -51,7 +51,7 @@ the project small enough to maintain solo at a few hours/week.
 | id | uuid | PK, default gen_random_uuid() |
 | user_id | uuid | FK → profiles.id |
 | title | text | required |
-| category | text | enum-constrained at app level |
+| category | text | free-text, user-defined; normalized (trim + lowercase) on insert — no fixed enum, no DB CHECK constraint |
 | problem | text | required |
 | what_tried | text | required |
 | why_failed | text | required |
@@ -131,3 +131,14 @@ browser exposure because RLS policies gate actual data access.
   far beyond what's needed for an ITU-scale launch
 - If image storage becomes a bottleneck, compress on upload client-side
   before sending to Storage
+
+## 10. Schema Migrations Log
+- **v1.1:** Removed `CHECK (category IN (...))` constraint from `failures`.
+  Category is now free-text/user-defined to keep the app domain-agnostic
+  (not locked to engineering/CS categories). Migration applied:
+  ```sql
+  ALTER TABLE public.failures DROP CONSTRAINT IF EXISTS failures_category_check;
+  ```
+  Frontend/feed-filter code must derive category filter options dynamically
+  from existing rows (e.g. `SELECT DISTINCT category FROM failures`)
+  instead of using a hardcoded list.

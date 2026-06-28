@@ -168,3 +168,6 @@ CREATE POLICY "Users can delete their own uploaded images" ON storage.objects
     auth.role() = 'authenticated' AND
     (storage.foldername(name))[1] = auth.uid()::text
   );
+
+ALTER TABLE public.failures DROP CONSTRAINT IF EXISTS failures_category_check;
+

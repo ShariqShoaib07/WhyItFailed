@@ -1,16 +1,22 @@
 # FailLog — Product Requirements Document (PRD)
 
 ## 1. Problem Statement
-Students fail constantly while building projects (robotics, code, hardware),
-but that knowledge dies in private group chats or gets forgotten entirely.
-There's no structured place to browse "what went wrong and why" before
-attempting something similar.
+People fail constantly while building things — projects, experiments,
+businesses, code, research, art — but that knowledge dies in private group
+chats or gets forgotten entirely. There's no structured place to browse
+"what went wrong and why" before attempting something similar, regardless
+of what field you're in.
 
 ## 2. Target Users
-- **Primary:** University engineering/CS students (ITU and beyond) working
-  on personal or course projects (robotics, ML, embedded, apps).
-- **Secondary:** Course instructors / project supervisors who want to see
-  common failure patterns across student work.
+- **Primary:** Students and self-learners across any discipline (not just
+  engineering/CS) working on personal or course projects — robotics, ML,
+  embedded, apps, but also business plans, lab experiments, design work,
+  writing, or any structured attempt that can fail in an instructive way.
+- **Secondary:** Instructors / mentors / project supervisors across any
+  field who want to see common failure patterns across a community's work.
+
+FailLog is domain-agnostic by design. The schema and UI never assume a
+specific field — categories are user-defined, not engineering-specific.
 
 ## 3. User Stories (v1)
 
@@ -31,9 +37,11 @@ attempting something similar.
 - New user → auto-create a `profiles` row
 
 ### 4.2 Create Post
-Fields: title, category (enum dropdown), problem description, what was
-tried, why it failed, tags (multi-input), optional image upload.
-All fields except image and tags are required.
+Fields: title, category (free-text input, user-defined — not a fixed
+dropdown), problem description, what was tried, why it failed, tags
+(multi-input), optional image upload. All fields except image and tags
+are required. Category value is normalized (trimmed + lowercased) on save
+so filtering stays consistent even though input is free-text.
 
 ### 4.3 Feed
 - Reverse chronological by default
@@ -43,7 +51,8 @@ All fields except image and tags are required.
 
 ### 4.4 Search & Filter
 - Text search across title + problem description
-- Filter by category (single select)
+- Filter by category — options populated dynamically from categories that
+  actually exist in posted data, not a hardcoded list
 - Filter by tag (multi-select)
 
 ### 4.5 Detail Page
@@ -72,6 +81,8 @@ All fields except image and tags are required.
 
 ## 7. Open Questions (revisit later)
 - Should categories be a fixed enum or user-extendable tags only?
-  → v1 decision: fixed enum (Robotics, AI/ML, Web/App, Embedded, Hardware,
-    Other) + free-form tags for finer detail.
+  → **Decision (updated):** free-text category field, normalized
+    (trim + lowercase) on save. No fixed enum — keeps the app
+    domain-agnostic so it isn't locked to engineering/CS use cases.
+    Filter options are derived dynamically from existing data.
 - Anonymous posting option? → Not in v1, revisit if users request it.
