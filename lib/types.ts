@@ -7,13 +7,11 @@ export interface Profile {
   created_at: string;
 }
 
-export type FailureCategory = 'Robotics' | 'AI/ML' | 'Web/App' | 'Embedded' | 'Hardware' | 'Other';
-
 export interface Failure {
   id: string;
   user_id: string;
   title: string;
-  category: FailureCategory;
+  category: string;
   problem: string;
   what_tried: string;
   why_failed: string;
