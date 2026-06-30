@@ -1,28 +1,27 @@
-import Link from 'next/link';
+import { createClient } from '@/lib/supabaseServer';
+import FailureFeed from '@/components/FailureFeed';
 
-export default function Home() {
+export default async function Home() {
+  const supabase = await createClient();
+
+  // Fetch the first page of failures (newest first, limit 6)
+  // This does not require an active user session, enabling public guest viewing
+  const { data: failures, error } = await supabase
+    .from('failures')
+    .select('*, profiles(*)')
+    .order('created_at', { ascending: false })
+    .range(0, 5);
+
+  if (error) {
+    console.error('Error loading initial failures feed:', error);
+  }
+
+  const initialFailures = failures || [];
+
   return (
-    <div className="flex flex-col items-center justify-center py-20 text-center">
-      <h2 className="font-mono text-2xl font-bold tracking-tight text-zinc-100 sm:text-3xl">
-        Engineering Failure Feed
-      </h2>
-      <p className="mt-4 max-w-md text-sm text-zinc-400 font-medium leading-relaxed">
-        This is where engineering failures become collective intelligence. Week 1 & 2 foundations (Auth, Database Pipeline) are successfully active.
-      </p>
-      <div className="mt-8 flex gap-4">
-        <Link
-          href="/new"
-          className="rounded-xl bg-zinc-100 px-5 py-2.5 text-sm font-semibold text-zinc-950 transition-all hover:bg-white active:scale-95 shadow-md cursor-pointer"
-        >
-          Post a Failure
-        </Link>
-        <Link
-          href="/login"
-          className="rounded-xl border border-zinc-800 bg-zinc-900/50 px-5 py-2.5 text-sm font-semibold text-zinc-300 transition-all hover:bg-zinc-800 hover:border-zinc-700 active:scale-95 cursor-pointer"
-        >
-          Sign In
-        </Link>
-      </div>
+    <div className="mx-auto max-w-[600px] w-full py-4">
+      {/* Centered feed column, max-width ~600px per FRONTEND_SPEC */}
+      <FailureFeed initialFailures={initialFailures} />
     </div>
   );
 }

@@ -50,6 +50,27 @@ accents for technical fields (category, tags) to signal "engineering" not
 - "Similar failures" section stubbed with a placeholder card row (greyed
   out / "coming soon") — UI slot reserved, no logic in v1
 
+#### 2.3.1 Failure Chain Timeline (v1.5 — only shown if a chain exists)
+If this post has a `parent_failure_id` OR has child posts retrying it,
+render a vertical timeline above the main content:
+```
+●━━ Attempt 1: [title]          [outcome dot: red/yellow/green]
+│
+●━━ Attempt 2: [title]
+│
+●━━ Attempt 3 (this post): [title]   ← current post highlighted
+│
+○┄┄ 2 people tried this differently →  (if children exist, show count
+                                          + link to branches)
+```
+- Each node is tappable, navigates to that post's detail page
+- Outcome dot color: red (failed) / yellow (partial) / green (resolved) —
+  grey/neutral if no outcome was set
+- If no chain exists at all (no parent, no children), this section simply
+  doesn't render — never show an empty timeline
+- On the create-post form, an optional "Link to a previous attempt"
+  search field lets the user find and select a parent post
+
 ### 2.4 Create Post Page (`/new`)
 - Single scrollable form, NOT a multi-step wizard (keeps it fast to post)
 - Fields in order: Title → Category (dropdown) → Problem → What I Tried →

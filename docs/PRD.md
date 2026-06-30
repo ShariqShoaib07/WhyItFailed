@@ -65,6 +65,34 @@ so filtering stays consistent even though input is free-text.
 - One upvote per user per post, toggleable (click again to remove)
 - Optimistic UI update on click
 
+### 4.7 Failure Chains (v1.5 — the app's signature differentiator)
+This is FailLog's unique mechanic, what separates it from a generic
+"post your failure" board. Most failure/postmortem content shows isolated
+incidents. Real engineering/problem-solving is iterative — people retry,
+adjust, and eventually succeed or abandon. Failure Chains makes that
+visible.
+
+**Behavior:**
+- When creating a post, an optional field: "Is this a retry of an earlier
+  attempt?" — user searches/selects a previous post (their own or anyone's)
+  to link as the parent.
+- A post can have at most one parent (the attempt it followed), but can
+  have multiple children (multiple people may have retried the same
+  failure differently) — this forms a tree, not just a flat list.
+- Detail page renders the full chain as a vertical timeline: each linked
+  attempt shown in order, with its own title/category/outcome, ending at
+  the current post.
+- Optional "outcome" tag per post in a chain: Failed / Partially Worked /
+  Resolved — gives the chain visual progress (e.g. red → yellow → green
+  dots in the timeline).
+- Chains are entirely optional. A standalone post with no parent/children
+  is still fully valid — this feature must never feel mandatory or block
+  posting.
+
+**Why this matters for positioning:** it reframes FailLog from "a feed of
+individual failures" to "a visible map of how people actually iterate
+toward working solutions" — the thing competitors don't show.
+
 ## 5. Out of Scope for v1
 - Comments/replies
 - Notifications
@@ -73,11 +101,15 @@ so filtering stays consistent even though input is free-text.
 - "Similar failures" recommendation logic
 - Email digests
 - Multi-university tenancy
+- Echo / "this happened to me too" reaction (separate from upvotes) —
+  deferred to v2 backlog, see FEATURE_CHECKLIST.md
 
 ## 6. Success Metrics
 - **Portfolio metric:** Clean, deployed, public repo with README + live link
 - **Usage metric:** 50 real posted failures within first semester of launch
 - **Engagement metric:** Average session includes scrolling 10+ feed cards
+- **Differentiator metric:** at least a few real Failure Chains (2+ linked
+  posts) exist, demonstrating the feature in action for demo/CV purposes
 
 ## 7. Open Questions (revisit later)
 - Should categories be a fixed enum or user-extendable tags only?

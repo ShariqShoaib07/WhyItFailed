@@ -49,6 +49,23 @@ are done and tested — this is the main defense against scope creep.
 - [ ] Write README.md (screenshots, live link, stack badges, setup steps)
 - [ ] Final deploy check on Vercel production URL
 
+## Week 7 — Failure Chains (v1.5 — signature differentiator)
+Do not start this until Weeks 1-6 are fully functional and deployed.
+This is the one standout feature, not a pile of extra features — keep
+scope tight to exactly what's below.
+- [ ] Run migration: add `parent_failure_id` + `outcome` columns to `failures`
+- [ ] Create-post form: optional "Link to a previous attempt" search field
+- [ ] Recursive query (Postgres `WITH RECURSIVE`) to fetch a post's full
+      ancestor chain
+- [ ] Query to fetch direct children (other attempts retrying this post)
+- [ ] Timeline UI component on detail page per FRONTEND_SPEC.md 2.3.1
+- [ ] Outcome selector (Failed / Partial / Resolved) on create-post form,
+      optional field
+- [ ] Verify: a standalone post with no chain renders completely normally
+      (timeline UI doesn't appear, no broken layout)
+- [ ] Post at least 2-3 real linked posts yourself to demo the feature
+      working before considering it "done"
+
 ## v2 Backlog (do NOT build now — just track here)
 - [ ] Comments/replies on failure posts
 - [ ] User profile pages (public, showing their post history)
@@ -57,6 +74,9 @@ are done and tested — this is the main defense against scope creep.
 - [ ] Admin moderation dashboard
 - [ ] University-level analytics dashboard
 - [ ] Verified/premium failure reports (monetization)
+- [ ] Echo reaction ("this happened to me too") — separate signal from
+      upvotes, own table similar to `upvotes`. Deferred until core app +
+      Failure Chains are shipped and real usage shows it's worth adding.
 
 ## Definition of Done (for any feature)
 A feature isn't "done" until:

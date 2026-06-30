@@ -58,6 +58,8 @@ the project small enough to maintain solo at a few hours/week.
 | tags | text[] | nullable |
 | image_url | text | nullable |
 | upvote_count | int | default 0, denormalized counter |
+| parent_failure_id | uuid | nullable, FK → failures.id (self-reference), ON DELETE SET NULL. Links this post to the earlier attempt it followed. See "Failure Chains" below. |
+| outcome | text | nullable, one of: 'failed', 'partial', 'resolved'. Optional status used to render chain progress visually. |
 | created_at | timestamptz | default now() |
 
 ### `upvotes`
@@ -132,7 +134,38 @@ browser exposure because RLS policies gate actual data access.
 - If image storage becomes a bottleneck, compress on upload client-side
   before sending to Storage
 
-## 10. Schema Migrations Log
+## 10. Failure Chains (v1.5 feature)
+**Data model:** `failures.parent_failure_id` is a self-referencing nullable
+FK. A post with `parent_failure_id = NULL` is a chain root (or a standalone
+post with no chain at all). A post with `parent_failure_id` set is a child
+of that earlier attempt. This forms a tree per root post, not a flat list —
+multiple people could each post their own retry of the same root failure.
+
+**Querying a full chain (for the detail page):**
+- Walk upward: recursively follow `parent_failure_id` until NULL, to get
+  every prior attempt leading to the current post.
+- Walk downward (optional, "what happened after this"): query
+  `WHERE parent_failure_id = current_post_id` to find direct children;
+  recurse if showing the full descendant tree.
+- Use a Postgres recursive CTE (`WITH RECURSIVE`) for this rather than
+  N sequential queries from the client.
+
+**Example recursive query (ancestors of a given post):**
+```sql
+WITH RECURSIVE chain AS (
+  SELECT * FROM failures WHERE id = $1
+  UNION ALL
+  SELECT f.* FROM failures f
+  JOIN chain c ON f.id = c.parent_failure_id
+)
+SELECT * FROM chain ORDER BY created_at ASC;
+```
+
+**UI:** rendered as a vertical timeline component on the detail page
+(see FRONTEND_SPEC.md). Entirely optional at post-creation time — never
+blocks or complicates the core posting flow for users who don't use it.
+
+## 11. Schema Migrations Log
 - **v1.1:** Removed `CHECK (category IN (...))` constraint from `failures`.
   Category is now free-text/user-defined to keep the app domain-agnostic
   (not locked to engineering/CS categories). Migration applied:
@@ -142,3 +175,14 @@ browser exposure because RLS policies gate actual data access.
   Frontend/feed-filter code must derive category filter options dynamically
   from existing rows (e.g. `SELECT DISTINCT category FROM failures`)
   instead of using a hardcoded list.
+- **v1.5:** Added Failure Chains support. Migration to apply:
+  ```sql
+  ALTER TABLE public.failures
+    ADD COLUMN IF NOT EXISTS parent_failure_id UUID REFERENCES public.failures(id) ON DELETE SET NULL,
+    ADD COLUMN IF NOT EXISTS outcome TEXT CHECK (outcome IN ('failed', 'partial', 'resolved'));
+
+  CREATE INDEX IF NOT EXISTS idx_failures_parent_failure_id ON public.failures(parent_failure_id);
+  ```
+  No RLS policy changes needed — existing SELECT/INSERT/UPDATE policies on
+  `failures` already cover these new columns since they're not separately
+  gated.
